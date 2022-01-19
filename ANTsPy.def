@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: python:3.7-slim-bullseye
+
+%runscript
+	echo "Arguments received: $*"
+	echo "$@"
+	echo "Executing python3 $1"
+	exec python3 $1
+
+%environment
+    VARIABLE=MEATBALLVALUE
+    export VARIABLE
+
+%labels
+   AUTHOR janecektyler@gmail.com
+
+%post
+	apt-get update
+	apt-get install cmake git -y
+	apt-get install libblas-dev liblapack-dev -y
+	apt-get install gfortran -y
+	apt-get install libpng-dev -y
+	apt-get install software-properties-common -y
+	apt-get install build-essential g++ gcc -y
+	apt-get update
+	
+	git clone https://github.com/ANTsX/ANTsPy
+	cd ANTsPy
+	pip install -r requirements.txt
+	pip install requests
+	pip install .
+	cd ..
+
+	git clone https://github.com/ANTsX/ANTsPyNet
+	cd ANTsPyNet
+	pip install -r requirements.txt
+	pip install .	
+
+%help
+	This container is a singularity wrapper on the DiffusionModel python helper for JAGS models
